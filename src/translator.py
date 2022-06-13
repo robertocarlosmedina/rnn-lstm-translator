@@ -347,7 +347,7 @@ class Seq2Seq_Translator:
             predictions = []
 
             for _ in range(3):
-                prediction = self.translate_sentence(trg)
+                prediction = self.translate(trg)
                 predictions.append(prediction)
 
             print(f'  Source (cv): {" ".join(src)}')

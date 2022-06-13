@@ -10,7 +10,7 @@ CORS(app, support_credentials=True)
 api = Api(app)
 
 request_put_args = reqparse.RequestParser()
-request_put_args.add_argument("sentence", type=str, help="Sentece to be translated.")
+request_put_args.add_argument("sentence", type=str, help="Sentence to be translated.")
 translator = Seq2Seq_Translator()
 
 

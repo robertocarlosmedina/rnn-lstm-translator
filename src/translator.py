@@ -13,6 +13,7 @@ from tqdm import tqdm
 from termcolor import colored
 import random
 import math
+import os
 
 from src.decoder import Decoder
 from src.encoder import Encoder
@@ -302,7 +303,13 @@ class Seq2Seq_Translator:
         translated_sentence = TreebankWordDetokenizer().detokenize(translated_sentence_str)
         return self.grammar.check_sentence(translated_sentence)
 
-if __name__ == '__main__':
-    ss = Seq2Seq_Translator()
-    # ss.train_model()
-    print(ss.translate_sentence("M tite bei."))
+    def console_model_test(self) -> None:
+        os.system("clear")
+        print("\n                     CV Creole Translator ")
+        print("-------------------------------------------------------------\n")
+        while True:
+            Sentence = str(input(f'  Sentence (cv): '))
+            translation = self.translate_sentence(Sentence)
+
+            print(
+                f'  Predicted (en): {translation}\n')

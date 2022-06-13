@@ -1,3 +1,19 @@
+
+import math
+
+import os
+
+from pyter import ter
+
+import spacy
+from src.decoder import Decoder
+from src.encoder import Encoder
+from src.encoder_decoder import EncoderDecoder
+from src.one_step_decoder import OneStepDecoder
+from src.grammar_checker import Grammar_checker
+
+from tqdm import tqdm
+from termcolor import colored
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,23 +24,6 @@ from nltk.tokenize.treebank import TreebankWordDetokenizer
 from nltk.translate.meteor_score import meteor_score
 from torchtext.data.metrics import bleu_score
 
-from pyter import ter
-
-import spacy
-import numpy as np
-import random
-from tqdm import tqdm
-from termcolor import colored
-import random
-import math
-import os
-
-from src.decoder import Decoder
-from src.encoder import Encoder
-from src.encoder_decoder import EncoderDecoder
-from src.one_step_decoder import OneStepDecoder
-from src.grammar_checker import Grammar_checker
-
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -32,8 +31,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 CLIP = 1
 EPOCHS = 1
 
+
 class Seq2Seq_Translator:
 
+    # Download the language files
     spacy_cv = spacy.load('pt_core_news_sm')
     spacy_en = spacy.load('en_core_web_sm')
 
@@ -51,7 +52,6 @@ class Seq2Seq_Translator:
         return [token.text for token in self.spacy_en.tokenizer(text)]
 
     def get_datasets(self, batch_size=128):
-        # Download the language files
         
         # Create the pytext's Field
         self.source = Field(tokenize=self.tokenize_cv, init_token='<sos>', eos_token='<eos>', lower=True)

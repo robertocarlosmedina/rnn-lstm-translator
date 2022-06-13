@@ -15,7 +15,7 @@ args = vars(arg_pr.parse_args())
 
 
 from src.translator import Seq2Seq_Translator
-# from src.flask_api import Resfull_API
+from src.flask_api import Resfull_API
 
 
 lstm_translator = Seq2Seq_Translator()
@@ -29,7 +29,7 @@ def execute_main_actions():
         "console": lstm_translator.console_model_test,
         "train": lstm_translator.train_model,
         "test_model": "lstm_translator.test_model",
-        "flask_api": "Resfull_API.start",
+        "flask_api": Resfull_API.start,
         "blue_score": "lstm_translator.calculate_blue_score",
         "meteor_score": "lstm_translator.calculate_meteor_score", 
         "count_parameters": "lstm_translator.count_hyperparameters",

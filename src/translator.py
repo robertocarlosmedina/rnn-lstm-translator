@@ -70,6 +70,9 @@ class Seq2Seq_Translator:
                                                                               sort_key=lambda x: len(x.src),
                                                                               device=device)
 
+    def get_test_data(self) -> list:
+        return [(test.src, test.trg) for test in self.test_data.examples[0:20]]
+
     def create_model(self):
         # Define the required dimensions and hyper parameters
         embedding_dim = 256
@@ -289,9 +292,9 @@ class Seq2Seq_Translator:
     
     def translate_sentence(self, sentence: str) -> str:
         predicted_words = self.translate(sentence)
-        return self.untokenized_translation(predicted_words)
+        return self.untokenize_sentence(predicted_words)
 
-    def untokenized_translation(self, translated_sentence_list) -> str:
+    def untokenize_sentence(self, translated_sentence_list) -> str:
         """
             Method to untokenuze the pedicted translation.
             Returning it on as an str.
@@ -313,3 +316,17 @@ class Seq2Seq_Translator:
 
             print(
                 f'  Predicted (en): {translation}\n')
+
+    def test_model(self) -> None:
+        test_data = self.get_test_data()
+        os.system("clear")
+        print("\n                  CV Creole Translator Test ")
+        print("-------------------------------------------------------------\n")
+        for data_tuple in test_data:
+            src, trg = " ".join(
+                data_tuple[0]), self.untokenize_sentence(data_tuple[1])
+            translation = self.translate_sentence(trg)
+            print(f'  Source (cv): {src}')
+            print(f'  Target (en): {trg}')
+            print(
+                f'  Predicted (en): {self.untokenize_sentence(translation)}\n')

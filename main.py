@@ -28,7 +28,7 @@ def execute_main_actions():
     actions_dict = {
         "console": lstm_translator.console_model_test,
         "train": lstm_translator.train_model,
-        "test_model": "lstm_translator.test_model",
+        "test_model": lstm_translator.test_model,
         "flask_api": Resfull_API.start,
         "blue_score": "lstm_translator.calculate_blue_score",
         "meteor_score": "lstm_translator.calculate_meteor_score", 

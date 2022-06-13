@@ -1,7 +1,7 @@
 from flask_restful import Api, Resource, reqparse
 from flask import Flask, jsonify
 from flask_cors import CORS
-import transformers
+
 from src.translator import Seq2Seq_Translator
 
 

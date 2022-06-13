@@ -1,8 +1,5 @@
-
 import math
-
 import os
-
 from pyter import ter
 
 import spacy

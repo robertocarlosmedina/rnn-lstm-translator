@@ -7,7 +7,7 @@ arg_pr.add_argument(
     "-a", "--action", nargs="+", required=True,
     choices=[
         "console", "train", "test_model", "flask_api", "blue_score",
-        "meteor_score", "matrix_confusion", "count_parameters", "ter_score"
+        "meteor_score", "count_parameters", "ter_score"
     ],
     help="Add an action to run this project"
 )

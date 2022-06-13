@@ -351,7 +351,7 @@ class Seq2Seq_Translator:
 
             for _ in range(3):
                 prediction = self.translate_sentence(trg)
-                predictions.append(prediction[:-1])
+                predictions.append(prediction)
 
             print(f'  Source (cv): {" ".join(src)}')
             print(f'  Target (en): {trg}')
@@ -414,7 +414,7 @@ class Seq2Seq_Translator:
             print(f'  Predictions (en): {" ".join(prediction)}\n')
 
             all_translation_ter += ter(prediction, trg)
-        print(f"Bleu score: {all_translation_ter/len(self.test_data) * 100:.2f}")
+        print(f"TER score: {all_translation_ter/len(self.test_data) * 100:.2f}")
 
     def count_hyperparameters(self) -> None:
         total_parameters =  sum(p.numel() for p in self.model.parameters() if p.requires_grad)

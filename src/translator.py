@@ -5,6 +5,10 @@ from torchtext.datasets import Multi30k
 from torchtext.data import Field, BucketIterator
 from torch.utils.tensorboard import SummaryWriter
 from nltk.tokenize.treebank import TreebankWordDetokenizer
+from nltk.translate.meteor_score import meteor_score
+from torchtext.data.metrics import bleu_score
+
+from pyter import ter
 
 import spacy
 import numpy as np
@@ -330,3 +334,89 @@ class Seq2Seq_Translator:
             print(f'  Target (en): {trg}')
             print(
                 f'  Predicted (en): {self.untokenize_sentence(translation)}\n')
+
+    def calculate_blue_score(self):
+        """
+            BLEU (bilingual evaluation understudy) is an algorithm for evaluating 
+            the quality of text which has been machine-translated from one natural 
+            language to another.
+        """
+        targets = []
+        outputs = []
+
+        for example in self.test_data:
+            src = vars(example)["src"]
+            trg = vars(example)["trg"]
+            predictions = []
+
+            for _ in range(3):
+                prediction = self.translate_sentence(trg)
+                predictions.append(prediction[:-1])
+
+            print(f'  Source (cv): {" ".join(src)}')
+            print(f'  Target (en): {trg}')
+            print(f'  Predictions (en):')
+            [print(f'      - {prediction}') for prediction in predictions]
+            print("\n")
+
+            targets.append(trg)
+            outputs.append(predictions)
+
+        score = bleu_score(targets, outputs)
+        print(f"Bleu score: {score * 100:.2f}")
+
+    def calculate_meteor_score(self):
+        """
+            METEOR (Metric for Evaluation of Translation with Explicit ORdering) is 
+            a metric for the evaluation of machine translation output. The metric is 
+            based on the harmonic mean of unigram precision and recall, with recall 
+            weighted higher than precision.
+        """
+        all_meteor_scores = []
+
+        for example in self.test_data:
+            src = vars(example)["src"]
+            trg = vars(example)["trg"]
+            predictions = []
+
+            for _ in range(4):
+                prediction = self.translate_sentence(trg)
+                predictions.append(self.untokenize_sentence(prediction))
+
+            all_meteor_scores.append(meteor_score(
+                predictions, self.untokenize_sentence(trg)
+            ))
+            print(f'  Source (cv): {" ".join(src)}')
+            print(f'  Target (en): {self.untokenize_sentence(trg)}')
+            print(f'  Predictions (en): ')
+            [print(f'      - {prediction}') for prediction in predictions]
+            print("\n")
+
+        score = sum(all_meteor_scores)/len(all_meteor_scores)
+        print(f"Meteor score: {score * 100:.2f}")
+
+    def calculate_ter(self):
+        """
+            TER. Translation Error Rate (TER) is a character-based automatic metric for 
+            measuring the number of edit operations needed to transform the 
+            machine-translated output into a human translated reference.
+        """
+        all_translation_ter = 0
+
+        for example in self.test_data:
+            src = vars(example)["src"]
+            trg = vars(example)["trg"]
+
+            prediction = self.translate_sentence(trg)
+
+            print(f'  Source (cv): {" ".join(src)}')
+            print(f'  Target (en): {" ".join(trg)}')
+            print(f'  Predictions (en): {" ".join(prediction)}\n')
+
+            all_translation_ter += ter(prediction, trg)
+        print(f"Bleu score: {all_translation_ter/len(self.test_data) * 100:.2f}")
+
+    def count_hyperparameters(self) -> None:
+        total_parameters =  sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+        print(
+            f'\nThe model has {total_parameters:,} trainable parameters')

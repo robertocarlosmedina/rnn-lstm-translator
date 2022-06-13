@@ -30,10 +30,10 @@ def execute_main_actions():
         "train": lstm_translator.train_model,
         "test_model": lstm_translator.test_model,
         "flask_api": Resfull_API.start,
-        "blue_score": "lstm_translator.calculate_blue_score",
-        "meteor_score": "lstm_translator.calculate_meteor_score", 
-        "count_parameters": "lstm_translator.count_hyperparameters",
-        "ter_score": "lstm_translator.calculate_ter"
+        "blue_score": lstm_translator.calculate_blue_score,
+        "meteor_score": lstm_translator.calculate_meteor_score, 
+        "count_parameters": lstm_translator.count_hyperparameters,
+        "ter_score": lstm_translator.calculate_ter
     }
 
     [actions_dict[action]() for action in args["action"]]

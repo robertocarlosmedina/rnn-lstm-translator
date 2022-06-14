@@ -25,6 +25,7 @@ from torchtext.data.metrics import bleu_score
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
+BATCH_SIZE = 10
 CLIP = 1
 EPOCHS = 1
 
@@ -48,7 +49,7 @@ class Seq2Seq_Translator:
     def tokenize_en(self, text):
         return [token.text for token in self.spacy_en.tokenizer(text)]
 
-    def get_datasets(self, batch_size=128):
+    def get_datasets(self):
         
         # Create the pytext's Field
         self.source = Field(tokenize=self.tokenize_cv, init_token='<sos>', eos_token='<eos>', lower=True)
@@ -65,11 +66,13 @@ class Seq2Seq_Translator:
         self.target.build_vocab(self.train_data, min_freq=3)
 
         # Create the Iterator using builtin Bucketing
-        self.train_iterator, self.valid_iterator, self.test_iterator = BucketIterator.splits((self.train_data, self.valid_data, self.test_data),
-                                                                              batch_size=batch_size,
-                                                                              sort_within_batch=True,
-                                                                              sort_key=lambda x: len(x.src),
-                                                                              device=device)
+        self.train_iterator, self.valid_iterator, self.test_iterator = BucketIterator.splits(
+            (self.train_data, self.valid_data, self.test_data),
+            batch_size=BATCH_SIZE,
+            sort_within_batch=True,
+            sort_key=lambda x: len(x.src),
+            device=device
+        )
 
     def get_test_data(self) -> list:
         return [(test.src, test.trg) for test in self.test_data.examples[0:20]]
@@ -169,9 +172,11 @@ class Seq2Seq_Translator:
         target_count, correct_train = 0, 0
         training_loss = []
         training_accu = []
+
         # set training mode
         self.model.train()
         # Loop through the training batch
+
         for i, batch in enumerate(self.train_iterator):
             # Get the source and target tokens
             src = batch.src
@@ -207,7 +212,9 @@ class Seq2Seq_Translator:
         return sum(training_loss) / len(training_loss), sum(training_accu) / len(training_accu)
     
     def evaluate(self, epoch, progress_bar):
+
         target_count, correct_train, train_acc = 0, 0, 0
+
         with torch.no_grad():
             # Set the model to eval
             self.model.eval()

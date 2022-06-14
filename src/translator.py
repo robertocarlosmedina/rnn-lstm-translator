@@ -1,4 +1,8 @@
 import math
+
+from nltk.tokenize.treebank import TreebankWordDetokenizer
+from nltk.translate.meteor_score import meteor_score
+
 import os
 from pyter import ter
 
@@ -11,15 +15,15 @@ from src.grammar_checker import Grammar_checker
 
 from tqdm import tqdm
 from termcolor import colored
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchtext.datasets import Multi30k
-from torchtext.data import Field, BucketIterator
 from torch.utils.tensorboard import SummaryWriter
-from nltk.tokenize.treebank import TreebankWordDetokenizer
-from nltk.translate.meteor_score import meteor_score
+
+from torchtext.data import Field, BucketIterator
 from torchtext.data.metrics import bleu_score
+from torchtext.datasets import Multi30k
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

@@ -31,7 +31,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 BATCH_SIZE = 10
 CLIP = 1
-EPOCHS = 1
+EPOCHS = 10
 
 
 class Seq2Seq_Translator:
@@ -106,7 +106,7 @@ class Seq2Seq_Translator:
         self.load_models()
 
     def load_models(self):
-        print("=> Loading checkpoint")
+        print(colored("=> Loading checkpoint", "cyan"))
         try:
             checkpoint = torch.load('checkpoints/nmt.model.lstm.25.pth.tar')
             self.optimizer.load_state_dict(checkpoint['optimizer'])
@@ -115,7 +115,7 @@ class Seq2Seq_Translator:
             print(colored("=> No checkpoint to Load", "red"))
     
     def save_model(self):
-        print("=> Saving checkpoint")
+        print(colored("=> Saving checkpoint", 'cyan'))
         checkpoint = {
             'state_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict()
@@ -339,9 +339,8 @@ class Seq2Seq_Translator:
                 data_tuple[0]), " ".join(data_tuple[1])
             translation = self.translate_sentence(trg)
             print(f'  Source (cv): {src}')
-            print(f'  Target (en): {trg}')
-            print(
-                f'  Predicted (en): {self.untokenize_sentence(translation)}\n')
+            print(colored(f'  Target (en): {trg}', attrs=['bold']))
+            print(colored(f'  Predicted (en): {translation}\n', 'blue', attrs=['bold']))
 
     def calculate_blue_score(self):
         """
@@ -362,16 +361,17 @@ class Seq2Seq_Translator:
                 predictions.append(prediction)
 
             print(f'  Source (cv): {" ".join(src)}')
-            print(f'  Target (en): {trg}')
-            print(f'  Predictions (en):')
-            [print(f'      - {prediction}') for prediction in predictions]
+            print(colored(f'  Target (en): {trg}', attrs=['bold']))
+            print(colored(f'  Predictions (en):', 'blue'))
+            [print(colored(f'      - {prediction}', 'blue', attrs=['bold'])) 
+                for prediction in predictions]
             print("\n")
 
             targets.append(trg)
             outputs.append(predictions)
 
         score = bleu_score(targets, outputs)
-        print(f"Bleu score: {score * 100:.2f}")
+        print(colored(f"==> Bleu score: {score * 100:.2f}\n", 'blue'))
 
     def calculate_meteor_score(self):
         """
@@ -395,13 +395,14 @@ class Seq2Seq_Translator:
                 predictions, self.untokenize_sentence(trg)
             ))
             print(f'  Source (cv): {" ".join(src)}')
-            print(f'  Target (en): {self.untokenize_sentence(trg)}')
-            print(f'  Predictions (en): ')
-            [print(f'      - {prediction}') for prediction in predictions]
+            print(colored(f'  Target (en): {trg}', attrs=['bold']))
+            print(colored(f'  Predictions (en): ', 'blue', attrs=['bold']))
+            [print(colored(f'      - {prediction}', 'blue', attrs=['bold'])) 
+                for prediction in predictions]
             print("\n")
 
         score = sum(all_meteor_scores)/len(all_meteor_scores)
-        print(f"Meteor score: {score * 100:.2f}")
+        print(colored(f"==> Meteor score: {score * 100:.2f}\n", 'blue'))
 
     def calculate_ter(self):
         """
@@ -418,13 +419,13 @@ class Seq2Seq_Translator:
             prediction = self.translate_sentence(trg)
 
             print(f'  Source (cv): {" ".join(src)}')
-            print(f'  Target (en): {" ".join(trg)}')
-            print(f'  Predictions (en): {" ".join(prediction)}\n')
+            print(colored(f'  Target (en): {" ".join(trg)}', attrs=['bold']))
+            print(colored(f'  Predictions (en): {" ".join(prediction)}\n', 'blue', attrs=['bold']))
 
             all_translation_ter += ter(prediction, trg)
-        print(f"TER score: {all_translation_ter/len(self.test_data) * 100:.2f}")
+        print(colored(f"==>TER score: {all_translation_ter/len(self.test_data) * 100:.2f}", 'blue'))
 
     def count_hyperparameters(self) -> None:
         total_parameters =  sum(p.numel() for p in self.model.parameters() if p.requires_grad)
-        print(
-            f'\nThe model has {total_parameters:,} trainable parameters')
+        print(colored(f'\n==> The model has {total_parameters:,} trainable parameters\n', 'blue'))
+

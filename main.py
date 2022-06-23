@@ -1,4 +1,5 @@
 import argparse
+from termcolor import colored
 
 arg_pr = argparse.ArgumentParser()
 
@@ -10,14 +11,38 @@ arg_pr.add_argument(
     ],
     help="Add an action to run this project"
 )
+
+arg_pr.add_argument(
+    "-s", "--source", required=True,
+    choices=[
+        "en", "cv"
+    ],
+    help="Source languague for the translation"
+)
+
+arg_pr.add_argument(
+    "-t", "--target", required=True,
+    choices=[
+        "en", "cv"
+    ],
+    help="Target languague for the translation"
+)
+
 args = vars(arg_pr.parse_args())
 
 
+if args["source"] == args["target"]:
+    print(
+        colored("Error: Source languague and Target languague should not be the same.", "red", attrs=["bold"])
+    )
+    exit(1)
+
+
 from src.translator import Seq2Seq_Translator
-from src.flask_api import Resfull_API
+# from src.flask_api import Resfull_API
 
 
-lstm_translator = Seq2Seq_Translator()
+lstm_translator = Seq2Seq_Translator(args["source"], args["target"])
 
 
 def execute_main_actions():
@@ -28,7 +53,7 @@ def execute_main_actions():
         "console": lstm_translator.console_model_test,
         "train": lstm_translator.train_model,
         "test_model": lstm_translator.test_model,
-        "flask_api": Resfull_API.start,
+        # "flask_api": Resfull_API.start,
         "blue_score": lstm_translator.calculate_blue_score,
         "meteor_score": lstm_translator.calculate_meteor_score, 
         "count_parameters": lstm_translator.count_hyperparameters,

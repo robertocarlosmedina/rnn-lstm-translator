@@ -29,7 +29,7 @@ from torchtext.datasets import Multi30k
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-BATCH_SIZE = 10
+BATCH_SIZE = 18
 CLIP = 1
 EPOCHS = 10
 
@@ -37,31 +37,35 @@ EPOCHS = 10
 class Seq2Seq_Translator:
 
     # Download the language files
-    spacy_cv = spacy.load('pt_core_news_sm')
-    spacy_en = spacy.load('en_core_web_sm')
+    spacy_models = {
+        "en": spacy.load("en_core_web_sm"),
+        "pt": spacy.load("pt_core_news_sm"),
+        "cv": spacy.load("pt_core_news_sm"),
+    }
 
-    def __init__(self) -> None:
+    def __init__(self, source_languague: str, target_languague: str) -> None:
+        self.source_languague = source_languague
+        self.target_languague = target_languague
         self.get_datasets()
         self.create_model()
         self.grammar = Grammar_checker()
         self.writer = SummaryWriter()
-        pass
 
-    def tokenize_cv(self, text):
-        return [token.text for token in self.spacy_cv.tokenizer(text)]
+    def tokenize_src(self, text):
+        return [token.text for token in self.spacy_models[self.source_languague].tokenizer(text)]
     
-    def tokenize_en(self, text):
-        return [token.text for token in self.spacy_en.tokenizer(text)]
+    def tokenize_trg(self, text):
+        return [token.text for token in self.spacy_models[self.target_languague].tokenizer(text)]
 
     def get_datasets(self):
         
         # Create the pytext's Field
-        self.source = Field(tokenize=self.tokenize_cv, init_token='<sos>', eos_token='<eos>', lower=True)
-        self.target = Field(tokenize=self.tokenize_en, init_token='<sos>', eos_token='<eos>', lower=True)
+        self.source = Field(tokenize=self.tokenize_src, init_token='<sos>', eos_token='<eos>', lower=True)
+        self.target = Field(tokenize=self.tokenize_trg, init_token='<sos>', eos_token='<eos>', lower=True)
 
         # Splits the data in Train, Test and Validation data
         self.train_data, self.valid_data, self.test_data = Multi30k.splits(
-            exts=(".cv", ".en"), fields=(self.source, self.target),
+            exts=(f".{self.source_languague}", f".{self.target_languague}"), fields=(self.source, self.target),
             test="test", path=".data/criolSet"
         )
 
@@ -108,7 +112,8 @@ class Seq2Seq_Translator:
     def load_models(self):
         print(colored("=> Loading checkpoint", "cyan"))
         try:
-            checkpoint = torch.load('checkpoints/nmt.model.lstm.25.pth.tar')
+            checkpoint = torch.load(
+                f'checkpoints/lstm-{self.source_languague}-{self.target_languague}.pth.tar')
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             self.model.load_state_dict(checkpoint['state_dict'])
         except:
@@ -120,7 +125,9 @@ class Seq2Seq_Translator:
             'state_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict()
         }
-        torch.save(checkpoint, 'checkpoints/nmt.model.lstm.25.pth.tar')
+        torch.save(
+            checkpoint, 
+            f'checkpoints/lstm-{self.source_languague}-{self.target_languague}.pth.tar')
     
     def show_train_metrics(self, epoch: int, train_loss: float, 
         train_accuracy: float, valid_loss: float, valid_accuracy:float) -> None:
@@ -251,7 +258,9 @@ class Seq2Seq_Translator:
     def train_model(self):
 
         for epoch in range(1, EPOCHS + 1):
-            progress_bar = tqdm(total=len(self.train_iterator), bar_format='{l_bar}{bar:10}{r_bar}{bar:-10b}', unit=' batches', ncols=200)
+            progress_bar = tqdm(
+                total=len(self.train_iterator)+len(self.valid_iterator), 
+                bar_format='{l_bar}{bar:10}{r_bar}{bar:-10b}', unit=' batches', ncols=200)
 
             # Train and evalute the model
             train_loss, train_accu = self.train(epoch, progress_bar)
@@ -306,17 +315,17 @@ class Seq2Seq_Translator:
         predicted_words = self.translate(sentence)
         return self.untokenize_sentence(predicted_words)
 
-    def untokenize_sentence(self, translated_sentence_list) -> str:
+    def untokenize_sentence(self, translated_sentence: list) -> str:
         """
             Method to untokenuze the pedicted translation.
             Returning it on as an str.
         """
-        translated_sentence_str = []
-        for word in translated_sentence_list:
-            if(word != "<eos>" and word != "<unk>"):
-                translated_sentence_str.append(word)
-        translated_sentence = TreebankWordDetokenizer().detokenize(translated_sentence_str)
-        return self.grammar.check_sentence(translated_sentence)
+        translated_sentence = self.remove_special_notation(translated_sentence)
+        if self.source_languague == "cv":
+            translated_sentence = TreebankWordDetokenizer().detokenize(translated_sentence)
+            return self.grammar.check_sentence(translated_sentence)
+
+        return " ".join(translated_sentence)
 
     def console_model_test(self) -> None:
         os.system("clear")
@@ -358,7 +367,7 @@ class Seq2Seq_Translator:
 
             for _ in range(3):
                 prediction = self.translate(trg)
-                predictions.append(prediction)
+                predictions.append(self.remove_special_notation(prediction))
 
             print(f'  Source (cv): {" ".join(src)}')
             print(colored(f'  Target (en): {trg}', attrs=['bold']))
@@ -389,10 +398,11 @@ class Seq2Seq_Translator:
 
             for _ in range(4):
                 prediction = self.translate_sentence(trg)
-                predictions.append(self.untokenize_sentence(prediction))
+                prediction = self.remove_special_notation(prediction)
+                predictions.append(" ".join(prediction))
 
             all_meteor_scores.append(meteor_score(
-                predictions, self.untokenize_sentence(trg)
+                predictions, " ".join(trg)
             ))
             print(f'  Source (cv): {" ".join(src)}')
             print(colored(f'  Target (en): {trg}', attrs=['bold']))
@@ -429,3 +439,5 @@ class Seq2Seq_Translator:
         total_parameters =  sum(p.numel() for p in self.model.parameters() if p.requires_grad)
         print(colored(f'\n==> The model has {total_parameters:,} trainable parameters\n', 'blue'))
 
+    def remove_special_notation(sentence: list):
+        return [token for token in sentence if token not in ["<unk>", "<eos>", "<sos>"]]

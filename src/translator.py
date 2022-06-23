@@ -439,5 +439,5 @@ class Seq2Seq_Translator:
         total_parameters =  sum(p.numel() for p in self.model.parameters() if p.requires_grad)
         print(colored(f'\n==> The model has {total_parameters:,} trainable parameters\n', 'blue'))
 
-    def remove_special_notation(sentence: list):
+    def remove_special_notation(self, sentence: list):
         return [token for token in sentence if token not in ["<unk>", "<eos>", "<sos>"]]

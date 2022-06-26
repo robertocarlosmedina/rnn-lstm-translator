@@ -39,9 +39,10 @@ if args["source"] == args["target"]:
 
 
 from src.translator import Seq2Seq_Translator
+from src.utils import check_dataset
 # from src.flask_api import Resfull_API
 
-
+check_dataset()
 lstm_translator = Seq2Seq_Translator(args["source"], args["target"])
 
 

@@ -2,7 +2,7 @@
 import os
 import zipfile
 import shutil
-import colored
+from termcolor import colored
 
 
 def download_crioleSet() -> None:

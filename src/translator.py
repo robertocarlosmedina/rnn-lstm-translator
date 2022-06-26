@@ -66,7 +66,7 @@ class Seq2Seq_Translator:
         # Splits the data in Train, Test and Validation data
         self.train_data, self.valid_data, self.test_data = Multi30k.splits(
             exts=(f".{self.source_languague}", f".{self.target_languague}"), fields=(self.source, self.target),
-            test="test", path=".data/criolSet"
+            test="test", path=".data/crioleSet"
         )
 
         # Build the vocabulary for both the language

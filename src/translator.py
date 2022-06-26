@@ -30,6 +30,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 BATCH_SIZE = 10
+LEARNING_RATE = 3e-4
 CLIP = 1
 EPOCHS = 500
 
@@ -101,7 +102,7 @@ class Seq2Seq_Translator:
         self.model = self.model.to(device)
 
         # Define the optimizer
-        self.optimizer = optim.Adam(self.model.parameters())
+        self.optimizer = optim.Adam(self.model.parameters(), lr=LEARNING_RATE)
 
         # Makes sure the CrossEntropyLoss ignores the padding tokens.
         TARGET_PAD_IDX = self.target.vocab.stoi[self.target.pad_token]

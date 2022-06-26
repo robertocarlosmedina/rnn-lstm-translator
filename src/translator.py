@@ -145,40 +145,44 @@ class Seq2Seq_Translator:
         """
         # All stand alone metrics
         self.writer.add_scalar(
-            "Training Loss", train_loss, global_step=epoch)
+            f"Training Loss ({self.source_languague}-{self.target_languague})", 
+            train_loss, global_step=epoch)
         self.writer.add_scalar(
-            "Training Accuracy", train_accuracy, global_step=epoch)
+            f"Training Accuracy ({self.source_languague}-{self.target_languague})", 
+            train_accuracy, global_step=epoch)
         self.writer.add_scalar(
-            "Validation Loss", valid_loss, global_step=epoch)
+            f"Validation Loss ({self.source_languague}-{self.target_languague})", 
+            valid_loss, global_step=epoch)
         self.writer.add_scalar(
-            "Validation Accuracy", valid_accuracy, global_step=epoch)
+            f"Validation Accuracy ({self.source_languague}-{self.target_languague})", 
+            valid_accuracy, global_step=epoch)
         
         # Mixing Train Metrics
         self.writer.add_scalars(
-            "Training Metrics (Train Loss / Train Accurary)", {
-                "Train Loss": train_loss, "Train Accurary": train_accuracy},
+            f"Training Loss & Accurary ({self.source_languague}-{self.target_languague})", 
+            {"Train Loss": train_loss, "Train Accurary": train_accuracy},
             global_step=epoch
         )
 
         # Mixing Validation Metrics
         self.writer.add_scalars(
-            "Training Metrics (Validation Loss / Validation Accurary)", {
-                "Validation Loss": valid_loss, "Validation Accuracy": valid_accuracy},
+            f"Validation Loss & Accurary  ({self.source_languague}-{self.target_languague})", 
+            {"Validation Loss": valid_loss, "Validation Accuracy": valid_accuracy},
             global_step=epoch
         )
         
         # Mixing Train and Validation Metrics
         self.writer.add_scalars(
-            "Training Metrics (Train Loss / Validation Loss)", {
-                "Train Loss": train_loss, "Validation Loss": valid_loss},
+            f"Train Loss & Validation Loss ({self.source_languague}-{self.target_languague})", 
+            {"Train Loss": train_loss, "Validation Loss": valid_loss},
             global_step=epoch
         )
         self.writer.add_scalars(
-            "Training Metrics (Train Accurary / Validation Accuracy)", {
-                "Train Accurary": train_accuracy, "Validation Accuracy": valid_accuracy},
+            f"Train Accurary & Validation Accuracy ({self.source_languague}-{self.target_languague})",
+            {"Train Accurary": train_accuracy, "Validation Accuracy": valid_accuracy},
             global_step=epoch
         )
-        
+
     def train(self, epoch, progress_bar):
         
         target_count, correct_train = 0, 0

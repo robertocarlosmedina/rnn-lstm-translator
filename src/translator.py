@@ -29,9 +29,9 @@ from torchtext.datasets import Multi30k
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-BATCH_SIZE = 18
+BATCH_SIZE = 10
 CLIP = 1
-EPOCHS = 10
+EPOCHS = 500
 
 
 class Seq2Seq_Translator:

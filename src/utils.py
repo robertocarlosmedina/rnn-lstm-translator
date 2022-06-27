@@ -29,3 +29,10 @@ def check_dataset() -> None:
         download_crioleSet()
     else: 
         print(colored("==> The crioleSet is in the project", attrs=["bold"]))
+
+def progress_bar(value: int, max_width: int, display: str, unit: str, bar_size=20):
+    bar_state = int((bar_size*value)/max_width)
+    print(
+        colored(f" [{'='*bar_state}>{' '*(bar_size-bar_state)}] {value}/{max_width} {unit}, {display}", attrs=["bold"]), 
+        end='\r'
+    )

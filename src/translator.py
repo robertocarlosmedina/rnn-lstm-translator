@@ -22,7 +22,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 from torchtext.data import Field, BucketIterator
-from torchtext.data.metrics import bleu_score
+from nltk.translate.bleu_score import sentence_bleu
 from torchtext.datasets import Multi30k
 
 
@@ -114,7 +114,8 @@ class Seq2Seq_Translator:
         print(colored("=> Loading checkpoint", "cyan"))
         try:
             checkpoint = torch.load(
-                f'checkpoints/lstm-{self.source_languague}-{self.target_languague}.pth.tar')
+                f'checkpoints/lstm-{self.source_languague}-{self.target_languague}.pth.tar',
+                map_location='cpu')
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             self.model.load_state_dict(checkpoint['state_dict'])
         except:
@@ -362,8 +363,7 @@ class Seq2Seq_Translator:
             the quality of text which has been machine-translated from one natural 
             language to another.
         """
-        targets = []
-        outputs = []
+        blue_scores = []
 
         for example in self.test_data:
             src = vars(example)["src"]
@@ -381,10 +381,10 @@ class Seq2Seq_Translator:
                 for prediction in predictions]
             print("\n")
 
-            targets.append(trg)
-            outputs.append(predictions)
+            score = sentence_bleu(predictions, trg)
+            blue_scores.append(score)
 
-        score = bleu_score(targets, outputs)
+        score =  sum(blue_scores) /len(blue_scores)
         print(colored(f"==> Bleu score: {score * 100:.2f}\n", 'blue'))
 
     def calculate_meteor_score(self):

@@ -84,7 +84,7 @@ class Seq2Seq_Translator:
         )
 
     def get_test_data(self) -> list:
-        return [(test.src, test.trg) for test in self.test_data.examples[0:20]]
+        return [(test.src, test.trg) for test in self.test_data.examples]
 
     def create_model(self):
         # Define the required dimensions and hyper parameters
@@ -338,8 +338,8 @@ class Seq2Seq_Translator:
         print("\n                     CV Creole Translator ")
         print("-------------------------------------------------------------\n")
         while True:
-            Sentence = str(input(f'  Sentence (cv): '))
-            translation = self.translate_sentence(Sentence)
+            sentence = str(input(f'  Sentence (cv): '))
+            translation = self.translate_sentence(sentence.split(" "))
 
             print(
                 f'  Predicted (en): {translation}\n')
@@ -352,7 +352,7 @@ class Seq2Seq_Translator:
         for data_tuple in test_data:
             src, trg = " ".join(
                 data_tuple[0]), " ".join(data_tuple[1])
-            translation = self.translate_sentence(trg)
+            translation = self.translate_sentence(src.split(" "))
             print(f'  Source (cv): {src}')
             print(colored(f'  Target (en): {trg}', attrs=['bold']))
             print(colored(f'  Predicted (en): {translation}\n', 'blue', attrs=['bold']))
@@ -366,12 +366,12 @@ class Seq2Seq_Translator:
         blue_scores = []
 
         for example in self.test_data:
-            src = vars(example)["src"]
+            src = " ".join(vars(example)["src"])
             trg = vars(example)["trg"]
             predictions = []
 
             for _ in range(3):
-                prediction = self.translate(trg)
+                prediction = self.translate(src.split(" "))
                 predictions.append(self.remove_special_notation(prediction))
 
             print(f'  Source (cv): {" ".join(src)}')
@@ -397,19 +397,19 @@ class Seq2Seq_Translator:
         all_meteor_scores = []
 
         for example in self.test_data:
-            src = vars(example)["src"]
+            src = " ".join(vars(example)["src"])
             trg = vars(example)["trg"]
             predictions = []
 
             for _ in range(4):
-                prediction = self.translate_sentence(trg)
+                prediction = self.translate(src.split(" "))
                 prediction = self.remove_special_notation(prediction)
                 predictions.append(" ".join(prediction))
 
             all_meteor_scores.append(meteor_score(
                 predictions, " ".join(trg)
             ))
-            print(f'  Source (cv): {" ".join(src)}')
+            print(f'  Source (cv): {src}')
             print(colored(f'  Target (en): {trg}', attrs=['bold']))
             print(colored(f'  Predictions (en): ', 'blue', attrs=['bold']))
             [print(colored(f'      - {prediction}', 'blue', attrs=['bold'])) 
@@ -428,12 +428,12 @@ class Seq2Seq_Translator:
         all_translation_ter = 0
 
         for example in self.test_data:
-            src = vars(example)["src"]
+            src = " ".join(vars(example)["src"])
             trg = vars(example)["trg"]
 
-            prediction = self.translate_sentence(trg)
+            prediction = self.translate(src.split(" "))
 
-            print(f'  Source (cv): {" ".join(src)}')
+            print(f'  Source (cv): {src}')
             print(colored(f'  Target (en): {" ".join(trg)}', attrs=['bold']))
             print(colored(f'  Predictions (en): {" ".join(prediction)}\n', 'blue', attrs=['bold']))
 

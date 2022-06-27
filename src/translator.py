@@ -32,7 +32,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 BATCH_SIZE = 10
 LEARNING_RATE = 3e-4
 CLIP = 1
-EPOCHS = 500
+EPOCHS = 150
 
 
 class Seq2Seq_Translator:

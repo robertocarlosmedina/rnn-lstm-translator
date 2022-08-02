@@ -45,9 +45,9 @@ Then it is necessary to specify the source and target language, for example, bei
 python main.py -a train -s en -t cv
 ```
 **Notes** that the parameters have the following meanings:
-- **'-a'** or **'-action'** is the action to be performed;
-- **'-s'** or **'-source'** is the source language;
-- **'-t'** or **'-target'** is the target language;
+- **'-a'** or **'--action'** is the action to be performed;
+- **'-s'** or **'--source'** is the source language;
+- **'-t'** or **'--target'** is the target language;
 
 
 ### All parts of the project into a whole

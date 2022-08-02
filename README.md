@@ -76,7 +76,7 @@ Projects related to using the frontend application can be found at:
 The dataset used to train, validate and test the model was the [CrioleSet dataset].
 If the dataset is not in the project while executing any of the action commands, it will be downloaded and added to the project.
 
-- [CrioleSet datset]
+- [CrioleSet dataset]
 
 
 ### Projects References
@@ -105,7 +105,7 @@ MIT
    [GRU model implementation]: <https://github.com/robertocarlosmedina/rnn-gru-attention-translator>
    [LSTM model implementation]: <https://github.com/robertocarlosmedina/rnn-lstm-translator>
    [MT Models API implementation]: <https://github.com/robertocarlosmedina/machine-translation-models-api>
-   [CrioleSet datset]: <https://github.com/robertocarlosmedina/crioleSet>
+   [CrioleSet dataset]: <https://github.com/robertocarlosmedina/crioleSet>
    [Cape Verdean Creole Translator Frontend test App]: <https://github.com/robertocarlosmedina/cv-creole-translator>
    [Models Training Graphs Generator]: <https://github.com/robertocarlosmedina/models-graphs-generator>
    [Google Translator]: <https://translate.google.com>

@@ -2,6 +2,7 @@ Flask==2.0.2
 Flask-RESTful==0.3.9
 Flask-Cors==3.0.10
 language-tool-python==2.7.1
+matplotlib==3.5.1
 nltk==3.6.3
 pyter3==0.3
 spacy==3.2.0

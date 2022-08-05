@@ -377,14 +377,9 @@ class Seq2Seq_Translator:
                 prediction = self.translate(src.split(" "))
                 predictions.append(self.remove_special_notation(prediction))
 
-            # print(f'  Source (cv): {" ".join(src)}')
-            # print(colored(f'  Target (en): {trg}', attrs=['bold']))
-            # print(colored(f'  Predictions (en):', 'blue'))
-            # [print(colored(f'      - {prediction}', 'blue', attrs=['bold'])) 
-            #     for prediction in predictions]
-            # print("\n")
-
             score = sentence_bleu(predictions, trg)
+            self.writer.add_scalar(f"BLUE Score ({self.source_languague}-{self.target_languague})", 
+                score, global_step=i)
             blue_scores.append(score)
 
             progress_bar(i+1, len_test_data, f"BLUE score: {round(score, 8)}", "phases")
@@ -414,14 +409,8 @@ class Seq2Seq_Translator:
 
             score = meteor_score(predictions, " ".join(trg))
             all_meteor_scores.append(score)
-
-            # print(f'  Source (cv): {src}')
-            # print(colored(f'  Target (en): {trg}', attrs=['bold']))
-            # print(colored(f'  Predictions (en): ', 'blue', attrs=['bold']))
-            # [print(colored(f'      - {prediction}', 'blue', attrs=['bold'])) 
-            #     for prediction in predictions]
-            # print("\n")
-            
+            self.writer.add_scalar(f"METEOR Score ({self.source_languague}-{self.target_languague})", 
+                score, global_step=i)            
             progress_bar(i+1, len_test_data, f"METEOR score: {round(score, 8)}", "phases")
 
         score = sum(all_meteor_scores)/len(all_meteor_scores)
@@ -441,12 +430,9 @@ class Seq2Seq_Translator:
             trg = vars(example)["trg"]
 
             prediction = self.translate(src.split(" "))
-
-            # print(f'  Source (cv): {src}')
-            # print(colored(f'  Target (en): {" ".join(trg)}', attrs=['bold']))
-            # print(colored(f'  Predictions (en): {" ".join(prediction)}\n', 'blue', attrs=['bold']))
-
             score = ter(prediction, trg)
+            self.writer.add_scalar(f"TER Score ({self.source_languague}-{self.target_languague})", 
+                score, global_step=i)
             all_translation_ter += score
             progress_bar(i+1, len_test_data, f"TER score: {round(score, 8)}", "phases")
 

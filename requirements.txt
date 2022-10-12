@@ -10,8 +10,8 @@ jiwer==2.3.0
 tensorflow==2.8.0
 tensorboard==2.9.1
 textblob==0.17.1
-torch==1.6.0
-torchtext==0.7.0
+torch==1.12.1
+torchtext==0.6.0
 pt-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-3.2.0/pt_core_news_sm-3.2.0-py3-none-any.whl
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.2.0/en_core_web_sm-3.2.0-py3-none-any.whl
 zipfile36==0.1.3
